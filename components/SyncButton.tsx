@@ -14,13 +14,10 @@ export function SyncButton() {
     try {
       // 1. Ping your Google Apps Script URL to trigger the sync
       // We use 'no-cors' so the browser doesn't block the request to Google's servers
-      await fetch(
-        'https://script.google.com/macros/s/AKfycbx4rgd6ecVwm5A3egiVL-MRVQ8vSSxuD_jGstW39v7UWmssNXgODw-MM3VCGuZ4v2KQ/exec',
-        {
-          method: 'POST',
-          mode: 'no-cors',
-        },
-      );
+      await fetch(process.env.NEXT_PUBLIC_SYNC_WEBHOOK_URL!, {
+        method: 'POST',
+        mode: 'no-cors',
+      });
 
       // 2. Wait 2 seconds to give the Apps Script time to finish writing to Supabase
       await new Promise((resolve) => setTimeout(resolve, 2000));
