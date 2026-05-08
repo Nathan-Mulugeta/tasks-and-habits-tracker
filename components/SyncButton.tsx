@@ -7,14 +7,22 @@ import { RefreshCw } from 'lucide-react';
 export function SyncButton() {
   const [isSyncing, setIsSyncing] = useState(false);
   const queryClient = useQueryClient();
+  const syncWebhookUrl = process.env.NEXT_PUBLIC_SYNC_WEBHOOK_URL;
 
   const handleSync = async () => {
+    if (!syncWebhookUrl) {
+      console.error(
+        'Missing NEXT_PUBLIC_SYNC_WEBHOOK_URL. Add it to your environment variables and redeploy.',
+      );
+      return;
+    }
+
     setIsSyncing(true);
 
     try {
       // 1. Ping your Google Apps Script URL to trigger the sync
       // We use 'no-cors' so the browser doesn't block the request to Google's servers
-      await fetch(process.env.NEXT_PUBLIC_SYNC_WEBHOOK_URL!, {
+      await fetch(syncWebhookUrl, {
         method: 'POST',
         mode: 'no-cors',
       });
@@ -35,7 +43,7 @@ export function SyncButton() {
   return (
     <button
       onClick={handleSync}
-      disabled={isSyncing}
+      disabled={isSyncing || !syncWebhookUrl}
       className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground bg-card border border-border/40 rounded-md transition-all active:scale-95 disabled:opacity-50"
     >
       <RefreshCw
